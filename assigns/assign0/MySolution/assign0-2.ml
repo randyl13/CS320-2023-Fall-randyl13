@@ -10,7 +10,7 @@ if n0 < 2 then
 else if n0 < 4 then 
   true
 else 
-  let rec myLoop(x: int): int =
+  let rec myLoop(x: int): bool =
   if x * x > n0 then
     true
   else if n0 mod x = 0 then
