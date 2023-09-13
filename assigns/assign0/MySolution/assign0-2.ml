@@ -4,6 +4,9 @@
 
 (* ****** ****** *)
 
+(* ******  This function uses a loop to find if there are any factors
+  of n0 other than itself and 1 ****** *)
+
 let isPrime(n0: int): bool =
 if n0 < 2 then
   false

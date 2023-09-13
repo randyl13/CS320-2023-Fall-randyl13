@@ -4,6 +4,9 @@
 
 (* ****** ****** *)
 
+(* ****** Finds the first value of n that returns '0' to the evaluation
+of fact(n) ****** *)
+
 let rec
 fact(x: int): int =
 if x > 0 then fact(x-1) * x  else 1
