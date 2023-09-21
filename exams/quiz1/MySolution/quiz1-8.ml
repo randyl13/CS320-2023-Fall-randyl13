@@ -18,6 +18,6 @@
 
 let sort5: int*int*int*int*int -> int*int*int*int*int =
   (* YOUR CODE *)
-
-
+  let sort1 x y = if x < y then (x, y) else (y, x) in
+  
 (* ************************************************ *)

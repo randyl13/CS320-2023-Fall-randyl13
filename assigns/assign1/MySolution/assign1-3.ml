@@ -1,4 +1,5 @@
-#use "./../../../classlib/OCaml/MyOcaml.ml";;
+#use "./../assign1.ml";;
+#use "./../../../classlib/OCaml/MyOCaml.ml";;
 
 let rec check_middle left right cs index = 
 if index = right then false
