@@ -25,6 +25,12 @@ let int2str(i0: int): string =
       
   in
   if i0 = 0 then "0"
+  else if i0 < 0 then
+    let int_length = chrLength i0 0 in
+    string_init ((chrLength i0 0) + 1) (fun i -> 
+      if i = int_length then '-'
+      else 
+      chrDigit i0 (int_length - i -1))
   else
   let int_length = chrLength i0 0 in
   string_init (chrLength i0 0) (fun i -> chrDigit i0 (int_length - i -1))
