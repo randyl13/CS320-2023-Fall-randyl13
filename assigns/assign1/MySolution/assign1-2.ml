@@ -1,4 +1,5 @@
-#use "./../../../classlib/OCaml/MyOcaml.ml";;
+#use "./../assign1.ml";;
+#use "./../../../classlib/OCaml/MyOCaml.ml";;
 
 (*function rec that increases index by one and checks the current index and compares and chooses
  until string is complete*)

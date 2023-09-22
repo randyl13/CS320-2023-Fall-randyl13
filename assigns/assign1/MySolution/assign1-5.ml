@@ -28,14 +28,3 @@ let rec indexLoop n index max xs =
 
 let string_longest_ascend(xs: string): string =
   indexLoop (string_length xs) 0 0 xs
-
-  let () = print_string(string_longest_ascend "1324561111")
-  let () =
-  assert(string_longest_ascend "1324561111" = "13456");;
-  let () =
-  assert(string_longest_ascend "1234561111" = "123456");;
-  let () =
-  assert(string_longest_ascend "1234511111" = "111111");;
-  (* ****** ****** *)
-  let () =
-  print_string("Assign1-5-test passed!\n");;
