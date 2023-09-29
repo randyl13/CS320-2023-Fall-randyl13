@@ -11,6 +11,7 @@ sys.path.append("./../../../../classlib/Python")
 from MyPython import *
 from assign2_6 import *
 ####################################################
+print(string_merge("135", "2468"))
 assert(string_merge("135", "2468") == "1234568")
 assert(string_merge("abcde", "1234") == "1234abcde")
 assert(string_merge("12345", "abcd") == "12345abcd")

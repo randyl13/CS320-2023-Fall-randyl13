@@ -1,4 +1,6 @@
 (* ****** ****** *)
+#use "./../../classlib/OCaml/MyOCaml.ml";;
+(* ****** ****** *)
 (*
 //
 Assign2: datatypes and more loops
