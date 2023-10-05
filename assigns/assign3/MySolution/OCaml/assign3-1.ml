@@ -20,7 +20,7 @@ let tail = function
 
 let rec
 matrix_transpose(xss: 'a list list): 'a list list= function
-  | [] 
+  | [] -> []
   | [] :: _ -> []
   | x -> 
   list_map head x :: matrix_transpose (list_map tail x)
