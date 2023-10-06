@@ -20,4 +20,17 @@
 # *)
 
 def foreach_to_get_at(foreach): # your implementation below
-
+  def get_at(xs, i):
+    ans = None
+    index = 0
+    def work(x):
+      nonlocal ans
+      nonlocal index
+      if index == i:
+        ans = x
+      elif index > len(xs) - 1:
+        raise Subscript
+      index += 1
+    foreach(xs, work)
+    return ans
+  return get_at

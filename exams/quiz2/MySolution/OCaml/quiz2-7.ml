@@ -16,5 +16,9 @@ match xs with
 *)
 
 (* ************************************************ *)
+let list_reverse(xs: 'a list): 'a list = 
+  list_foldright xs [] (fun x acc -> x :: acc) 
 
-let list_append(xs: 'a list): 'a list = ....
+let list_append(xs: 'a list)(ys: 'a list): 'a list = 
+  list_foldleft ys (list_reverse xs) (fun acc x -> x :: acc) 
+  

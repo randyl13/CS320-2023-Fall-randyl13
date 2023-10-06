@@ -9,6 +9,12 @@ is empty, raise the Empty exception
 *)
 
 (* ************************************************ *)
-
 exception Empty
-let list_last(xs: 'a list): 'a = ....
+let head = function
+  | [] -> []
+  | x :: _ -> x
+
+let list_last(xs: 'a list): 'a = 
+  match xs with
+  | [] -> raise Empty
+  | _ -> list_foldleft xs (head xs) (fun acc x -> x) 
