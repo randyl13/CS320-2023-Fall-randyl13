@@ -19,12 +19,14 @@ def cube_sum(ij):
 def theNatPairs_count(N):
     res = 0
     for ij in theNatPairs_cubesum():
+        print(ij)
         if cube_sum(ij) < N:
             res += 1
         else:
             break
     return res
 ####################################################
+print(theNatPairs_count(1000))
 assert(theNatPairs_count(1000) == 51)
 assert(theNatPairs_count(10000) == 226)
 assert(theNatPairs_count(100000) == 995)
