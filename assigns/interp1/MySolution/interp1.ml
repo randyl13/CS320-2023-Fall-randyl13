@@ -65,6 +65,20 @@ let split_on_char_2 sep str =
 let string_of_bool b =
   if b then "True" else "False"
 
+let rec string_of_int_custom n =
+  let digit_to_char d = char_of_digit (digit_of_char '0' + d) in
+  let rec aux acc n =
+    if n = 0 then
+      match acc with
+      | [] -> "0"
+      | _ -> string_concat_list (list_reverse acc)
+    else
+      let digit = n mod 10 in
+      aux (str(digit_to_char digit) :: acc) (n / 10)
+  in
+  aux [] n
+;;
+
 let rec to_string : value -> string = function
   | Int i -> string_of_int i
   | Bool b -> string_of_bool b
