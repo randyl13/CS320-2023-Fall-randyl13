@@ -25,18 +25,33 @@ type trace = string list
 
 type config = { stack: stack; trace: trace; program: command list }
 
+let rec is_blank cs =
+  match cs with
+  | ' ' | '\n' | '\t' | '\r' -> true
+  | _ -> false
+
 let rec trim cs =
   match string_get_at cs 0 with
-  | ' '
-  | ' ' -> string_tail cs
+  | c when is_blank c -> trim (string_tail cs)
   | _ -> cs
 
-let rec list_map(fopr)(xs) =
-match xs with
-| [] -> []
-| x1 :: xs -> fopr(x1) :: list_map(fopr)(xs)
+let rec list_map f xs =
+  match xs with
+  | [] -> []
+  | x1 :: xs -> f x1 :: list_map f xs
 
-let split_on_char(sep)(str) =
+let split_on_char sep str =
+  let rec split_acc acc current = function
+    | -1 -> current :: acc
+    | i ->
+      if string_get_at str i = sep then
+        split_acc (current :: acc) "" (i - 1)
+      else
+        split_acc acc (string_cons (string_get_at str i) current) (i - 1)
+  in
+  split_acc [] "" (string_length str - 2)
+
+let split_on_char_2 sep str =
   let rec split_acc acc current = function
     | -1 -> current :: acc
     | i ->
@@ -77,7 +92,9 @@ let rec eval_command : config -> config option = function
       eval_command { stack = new_stack; trace; program = rest }
 
   | { stack = (Int i1) :: (Int i2) :: rest_stack; trace; program = Div :: rest } ->
-      if i2 = 0 then None 
+      if i2 = 0 then 
+        let new_trace = "Panic" :: trace in
+        Some { stack = []; trace = new_trace; program = [] }
       else
         let new_stack = Int (i1 / i2) :: rest_stack in
         eval_command { stack = new_stack; trace; program = rest }
@@ -106,7 +123,10 @@ let rec eval_command : config -> config option = function
 
   | { stack; trace; program = [] } -> Some { stack; trace; program = [] }
 
-  | _ -> None 
+  | { stack; trace; program = _ } ->
+    (* Error: Unsupported operation or empty stack *)
+    let new_trace = "Panic" :: trace in
+    Some { stack = []; trace = new_trace; program = [] }
 
 let parse_value (s : string) : value option =
   try Some (Int (int_of_string s))
@@ -119,7 +139,7 @@ let parse_value (s : string) : value option =
   )
 
 let parse_command (s : string) : command option =
-  match split_on_char ' ' s with
+  match split_on_char_2 ' ' s with
   | ["Push"; value_str] -> (
       match parse_value value_str with
       | Some value -> Some (Push value)
@@ -138,7 +158,6 @@ let parse_command (s : string) : command option =
   | "Gt" :: [] -> Some Gt
   | _ -> None
 
-
 let rec parse_program : string list -> command list option = function
   | hd :: tl ->
       (match parse_command hd with
@@ -156,7 +175,6 @@ let interp (program : string) : string list option =
       let initial_config = { stack = []; trace = []; program } in
       (match eval_command initial_config with
       | Some final_config -> Some (list_reverse final_config.trace)
-      | None -> None)
-  | None -> None
-
+      | None -> Some ["Panic"])
+  | None -> Some ["Panic"]
 
