@@ -175,6 +175,6 @@ let interp (program : string) : string list option =
       let initial_config = { stack = []; trace = []; program } in
       (match eval_command initial_config with
       | Some final_config -> Some (list_reverse final_config.trace)
-      | None -> Some ["Panic"])
-  | None -> Some ["Panic"]
+      | None -> None)
+  | None -> None
 
