@@ -3,7 +3,7 @@
 type value =
   | Int of int
   | Bool of bool
-
+  | Unit
 
 type command =
   | Push of value
@@ -62,10 +62,13 @@ let split_on_char_2 sep str =
   in
   split_acc [] "" (string_length str - 1)
 
+let string_of_bool b =
+  if b then "True" else "False"
+
 let rec to_string : value -> string = function
   | Int i -> string_of_int i
   | Bool b -> string_of_bool b
-
+  | Unit -> "Unit"
 
 let rec eval_command : config -> config option = function
   | { stack; trace; program = Push v :: rest } ->
@@ -134,7 +137,7 @@ let parse_value (s : string) : value option =
     match s with
     | "True" -> Some (Bool true)
     | "False" -> Some (Bool false)
-
+    | "Unit" -> Some Unit
     | _ -> None
   )
 
@@ -178,3 +181,36 @@ let interp (program : string) : string list option =
       | None -> None)
   | None -> None
 
+let program_tokens1 = list_map trim (split_on_char ';' "Push 3; Push 3; Add; Trace;")
+
+let x = list_map parse_command program_tokens1
+
+let () =
+  let test_case program =
+    match interp program with
+    | Some result -> Printf.printf "Program: %s\nResult: %s\n\n" program (String.concat "; " result)
+    | None -> Printf.printf "Program: %s\nResult: None\n\n" program
+  in
+
+  test_case "Push 3; Push 3; Add; Trace;";
+  test_case "Push 3; Push 4; Sub; Trace;";
+  test_case "Push 3; Push 4; Mul; Trace;";
+  test_case "Push 4; Push 12; Div; Trace;";
+  test_case "Push 11; Push 1; Add; Push 4; Sub; Push 2; Mul; Trace;"; 
+  test_case "Push True; Push True; And; Trace;";
+  test_case "Push True; Push True; Or; Trace;";
+  test_case "Push False; Not; Trace;";
+  test_case "Push 4; Push 3; Lt; Trace;";
+  test_case "Push 3; Push 4; Gt; Trace;";
+  test_case "Push 2; Mul; Trace;";
+  test_case "Push False;
+Push False;
+And;
+Not;
+Trace;
+Push False;
+Not;
+Push False;
+Not;
+Or;
+Trace;";
