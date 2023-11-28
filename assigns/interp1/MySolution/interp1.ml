@@ -3,7 +3,7 @@
 type value =
   | Int of int
   | Bool of bool
-  | Unit
+
 
 type command =
   | Push of value
@@ -65,7 +65,7 @@ let split_on_char_2 sep str =
 let rec to_string : value -> string = function
   | Int i -> string_of_int i
   | Bool b -> string_of_bool b
-  | Unit -> "Unit"
+
 
 let rec eval_command : config -> config option = function
   | { stack; trace; program = Push v :: rest } ->
@@ -134,7 +134,7 @@ let parse_value (s : string) : value option =
     match s with
     | "True" -> Some (Bool true)
     | "False" -> Some (Bool false)
-    | "Unit" -> Some Unit
+
     | _ -> None
   )
 
