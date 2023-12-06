@@ -247,9 +247,9 @@ let rec eval (s : stack) (t : trace) (v : variable) (p : prog) : trace =
     (match s with
     | Bool b :: s0 ->
       if b then
-        eval s0 t v (list_append c1 p0) 
+        eval s0 t v (list_append p0 c1) 
       else
-        eval s0 t v (list_append c2 p0)  
+        eval s0 t v (list_append p0 c2)  
     | _ :: []              (* IfElseError1 *) -> eval [] ("Panic" :: t) [] []
     | []                   (* IfElseError2 *) -> eval [] ("Panic" :: t) [] [])
   
@@ -302,3 +302,5 @@ let read_file (fname : string) : string =
 let interp_file (fname : string) : string list option =
   let src = read_file fname in
   interp src
+
+
