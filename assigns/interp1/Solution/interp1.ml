@@ -48,7 +48,7 @@ let parse_const =
   parse_bool <|>
   parse_unit
 
-let parse_com = 
+and parse_com = 
   (keyword "Push" >> parse_const >>= fun c -> pure (Push c)) <|>
   (keyword "Pop" >> pure Pop) <|>
   (keyword "Trace" >> pure Trace) <|>

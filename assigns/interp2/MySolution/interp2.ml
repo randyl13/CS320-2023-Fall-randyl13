@@ -61,6 +61,10 @@ let parse_const =
   parse_unit <|>
   parse_sym 
 
+let remove_whitespace (s : string) : string =
+  let is_whitespace c = c = ' ' || c = '\t' || c = '\n' || c = '\r' in
+  string_filter s (fun c -> not (is_whitespace c))
+
 let parse_com2 = 
   (keyword "Push" >> parse_const >>= fun c -> pure (Push c)) <|>
   (keyword "Pop" >> pure Pop) <|>
@@ -247,9 +251,9 @@ let rec eval (s : stack) (t : trace) (v : variable) (p : prog) : trace =
     (match s with
     | Bool b :: s0 ->
       if b then
-        eval s0 t v (list_append p0 c1) 
+        eval s0 t v (list_append c1 p0) 
       else
-        eval s0 t v (list_append p0 c2)  
+        eval s0 t v (list_append c2 p0)  
     | _ :: []              (* IfElseError1 *) -> eval [] ("Panic" :: t) [] []
     | []                   (* IfElseError2 *) -> eval [] ("Panic" :: t) [] [])
   
@@ -272,7 +276,7 @@ let rec eval (s : stack) (t : trace) (v : variable) (p : prog) : trace =
   (match s with
    | Closure (f, env, closure_commands) :: a :: s0 (* ReturnStack *) ->
      eval (a :: s0) t env closure_commands
-   | _ :: s0                   (* CallError1 *) -> eval [] ("Panic" :: t) [] []
+   | _ :: s0                   (* ReturnError1 *) -> eval [] ("Panic" :: t) [] []
    | []                        (* ReturnError2 *) -> eval [] ("Panic" :: t) [] [])
 
 (* ------------------------------------------------------------ *)
@@ -280,7 +284,7 @@ let rec eval (s : stack) (t : trace) (v : variable) (p : prog) : trace =
 (* putting it all together [input -> parser -> eval -> output] *)
 
 let interp (s : string) : string list option =
-  match string_parse (whitespaces >> parse_coms) s with
+  match string_parse (whitespaces >> parse_coms) (remove_whitespace s) with
   | Some (p, []) -> Some (eval [] [] [] p)
   | _ -> None
 
@@ -303,4 +307,105 @@ let interp_file (fname : string) : string list option =
   let src = read_file fname in
   interp src
 
+
+let program_tokens2 = string_parse (whitespaces >> parse_coms)(remove_whitespace "Push factorial;
+Fun
+Push n;
+Bind;
+Push n;
+Lookup;
+Push 2;
+Gt;
+If
+Push 1;
+Swap;
+Return;
+Else
+Push n;
+Lookup;
+Push -1;
+Add;
+Push factorial;
+Lookup;
+Call;
+Push n;
+Lookup;
+Mul;
+Swap;
+Return;
+End;
+End;
+Push factorial;
+Bind;
+Push 4;
+Push factorial;
+Lookup;
+Call;
+Trace;")
+
+let program_tokens1 = string_parse (whitespaces >> parse_coms) "Push poly;
+Fun
+Push x;
+Bind;
+Push x;
+Lookup;
+Push x;
+Lookup;
+Mul;
+Push -4;
+Push x;
+Lookup;
+Mul;
+Add;
+Push 7;
+Add;
+Swap;
+Return;
+End;
+Push 3;
+Swap;
+Call;
+Trace;"
+
+let () =
+  let test_case program =
+    match interp program with
+    | Some result -> Printf.printf "Program: %s\nResult: %s\n\n" program (String.concat "; " result)
+    | None -> Printf.printf "Program: %s\nResult: None\n\n" program
+  in
+
+  test_case "Push factorial;
+Fun
+Push n;
+Bind;
+Push n;
+Lookup;
+Push 2;
+Gt;
+If
+Push 1;
+Swap;
+Return;
+Else
+Push n;
+Lookup;
+Push -1;
+Add;
+Push factorial;
+Lookup;
+Call;
+Push n;
+Lookup;
+Mul;
+Swap;
+Return;
+End;
+End;
+Push factorial;
+Bind;
+Push 4;
+Push factorial;
+Lookup;
+Call;
+Trace;";
 

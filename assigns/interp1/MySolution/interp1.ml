@@ -3,6 +3,7 @@
 type value =
   | Int of int
   | Bool of bool
+  | Unit
 
 type command =
   | Push of value
