@@ -407,12 +407,12 @@ let rec compile_expr (expr : expr) : string =
   | Let (x, m, n) -> (* Compile let binding *)
     let compiled_m = compile_expr m in
     let compiled_n = compile_expr n in
-    string_append(string_append(string_append(string_append(string_append compiled_m "; Push ") x) "; Bind; ") compiled_n) ";" 
+    string_append(string_append(string_append(string_append compiled_m "; Push ") x) "; Bind; ") compiled_n
 
   | Seq (m, n) -> (* Compile sequence expression *)
     let compiled_m = compile_expr m in
     let compiled_n = compile_expr n in
-    string_append(string_append(string_append compiled_m "; ") compiled_n) ";"
+    string_append(string_append compiled_m "; ") compiled_n
 
   | Ifte (cond, true_branch, false_branch) -> (* Compile if-then-else *)
     let compiled_cond = compile_expr cond in
@@ -429,4 +429,20 @@ let rec compile_expr (expr : expr) : string =
 let compile (s : string) : string =
   let parsed_expr = parse_prog s in
   let compiled_expr = compile_expr parsed_expr in
-  compiled_expr 
+  string_append compiled_expr ";"
+
+
+let test = parse_prog "let foo = fun f x -> x in let y = 2 in trace (foo y)"
+
+let test1 = compile "let foo = fun f x -> x in let y = 2 in trace (foo y)"
+
+let test2 = interp (compile "let foo = fun f x -> x in let y = 2 in trace (foo y)")
+(*
+
+Let ("vfacti1",
+   Fun ("vfacti2", "vxi3",
+    Ifte (BOpr (Lte, Var "vxi3", Int 0), Int 1,
+     BOpr (Mul, Var "vxi3", App (Var "vfacti2", BOpr (Sub, Var "vxi3", Int 1))))),
+   Trace (App (Var "vfacti1", Int 10)))
+     
+     *)
