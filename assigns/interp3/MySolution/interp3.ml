@@ -342,7 +342,7 @@ let rec compile_expr (expr : expr) : string =
   | Bool b -> (* Compile boolean constant *)
     if b then "Push True" else "Push False"
   | Unit -> (* Compile unit constant *)
-    "Push Unit"
+    "Push ()"
   | UOpr (Neg, m) -> (* Compile unary negation *)
     let compiled_m = compile_expr m in
     string_append compiled_m "; Neg"
@@ -408,7 +408,7 @@ let rec compile_expr (expr : expr) : string =
   | App (fun_expr, arg_expr) -> (* Compile function application *)
     let compiled_fun = compile_expr fun_expr in
     let compiled_arg = compile_expr arg_expr in
-    string_append(string_append(string_append compiled_arg "; ")  compiled_fun) "; Call"
+    string_append(string_append(string_append compiled_arg "; ") compiled_fun) "; Call"
 
   | Let (x, m, n) -> (* Compile let binding *)
     let compiled_m = compile_expr m in
