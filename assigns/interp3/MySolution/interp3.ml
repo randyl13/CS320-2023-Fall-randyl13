@@ -61,6 +61,12 @@ let opt (p : 'a parser) : 'a option parser =
 
 (* basic constants *)
 
+
+let str_of_int (n : int) : string = 
+  if n < 0 then
+    string_append "-" (str_of_nat (-n))
+  else str_of_nat n
+
 let parse_int : expr parser =
   let* n = natural in
   pure (Int n) << whitespaces
@@ -332,7 +338,7 @@ let parse_prog (s : string) : expr =
 let rec compile_expr (expr : expr) : string =
   match expr with
   | Int i -> (* Compile integer constant *)
-    string_append "Push " (str(char_of_digit i))
+    string_append "Push " (str_of_int i)
   | Bool b -> (* Compile boolean constant *)
     if b then "Push True" else "Push False"
   | Unit -> (* Compile unit constant *)
@@ -397,7 +403,7 @@ let rec compile_expr (expr : expr) : string =
 
   | Fun (f, x, body) -> (* Compile function definition *)
     let compiled_body = compile_expr body in
-    string_append(string_append(string_append(string_append(string_append(string_append "Push " f) "; Fun Push ") x) "; Bind; ") compiled_body) "; End"  
+    string_append(string_append(string_append(string_append(string_append(string_append "Push " f) "; Fun Push ") x) "; Bind; ") compiled_body) "; Swap; Return; End"  
 
   | App (fun_expr, arg_expr) -> (* Compile function application *)
     let compiled_fun = compile_expr fun_expr in
@@ -412,7 +418,7 @@ let rec compile_expr (expr : expr) : string =
   | Seq (m, n) -> (* Compile sequence expression *)
     let compiled_m = compile_expr m in
     let compiled_n = compile_expr n in
-    string_append(string_append compiled_m "; ") compiled_n
+    string_append(string_append compiled_m "; Pop; ") compiled_n
 
   | Ifte (cond, true_branch, false_branch) -> (* Compile if-then-else *)
     let compiled_cond = compile_expr cond in
@@ -430,19 +436,3 @@ let compile (s : string) : string =
   let parsed_expr = parse_prog s in
   let compiled_expr = compile_expr parsed_expr in
   string_append compiled_expr ";"
-
-
-let test = parse_prog "let foo = fun f x -> x in let y = 2 in trace (foo y)"
-
-let test1 = compile "let foo = fun f x -> x in let y = 2 in trace (foo y)"
-
-let test2 = interp (compile "let foo = fun f x -> x in let y = 2 in trace (foo y)")
-(*
-
-Let ("vfacti1",
-   Fun ("vfacti2", "vxi3",
-    Ifte (BOpr (Lte, Var "vxi3", Int 0), Int 1,
-     BOpr (Mul, Var "vxi3", App (Var "vfacti2", BOpr (Sub, Var "vxi3", Int 1))))),
-   Trace (App (Var "vfacti1", Int 10)))
-     
-     *)
